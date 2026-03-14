@@ -81,7 +81,7 @@ export const ChatInput = memo(function ChatInput({
             onClick={handleSend}
             disabled={isLoading || !inputValue.trim()}
             aria-label={ChatbotLocalization.sendButtonAriaLabel}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex cursor-pointer h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <svg
               className="h-5 w-5 rotate-90"

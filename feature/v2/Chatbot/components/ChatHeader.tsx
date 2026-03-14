@@ -38,7 +38,7 @@ export const ChatHeader = memo(function ChatHeader({ onNewChat }: ChatHeaderProp
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowHelp(true)}
-              className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+              className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
               aria-label="Ayuda"
             >
               <svg
@@ -59,7 +59,7 @@ export const ChatHeader = memo(function ChatHeader({ onNewChat }: ChatHeaderProp
             </button>
             <button
               onClick={onNewChat}
-              className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+              className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
             >
               <svg
                 className="h-4 w-4"
@@ -83,20 +83,27 @@ export const ChatHeader = memo(function ChatHeader({ onNewChat }: ChatHeaderProp
 
       {showHelp && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
           onClick={() => setShowHelp(false)}
         >
           <div
-            className="mx-4 max-w-sm rounded-xl bg-white p-6 shadow-lg dark:bg-gray-800"
+            className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-gray-700 dark:bg-gray-800"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                {ChatbotLocalization.helpTitle}
-              </h2>
+            <div className="mb-6 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                  {ChatbotLocalization.helpTitle}
+                </h2>
+              </div>
               <button
                 onClick={() => setShowHelp(false)}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                className="cursor-pointer rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
                 aria-label="Cerrar"
               >
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -104,11 +111,19 @@ export const ChatHeader = memo(function ChatHeader({ onNewChat }: ChatHeaderProp
                 </svg>
               </button>
             </div>
-            <ul className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
+            <ul className="space-y-4">
               {ChatbotLocalization.helpContent.map((item, index) => (
-                <li key={index}>{item}</li>
+                <li key={index} className="flex items-start gap-3 text-gray-600 dark:text-gray-300">
+                  <span className="mt-0.5 text-lg">{item.split(' ')[0]}</span>
+                  <span className="text-sm leading-relaxed">{item.substring(2)}</span>
+                </li>
               ))}
             </ul>
+            <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">
+              <p className="text-center text-xs text-gray-400 dark:text-gray-500">
+                ¿Necesitas más ayuda? Escríbenos a soporte@luckcasino.com
+              </p>
+            </div>
           </div>
         </div>
       )}

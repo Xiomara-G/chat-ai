@@ -28,7 +28,7 @@ export const ChatSuggestions = memo(function ChatSuggestions({
             <button
               key={index}
               onClick={() => onSuggestionClick(suggestion)}
-              className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-3 text-left text-sm text-gray-700 transition-all hover:border-blue-300 hover:bg-blue-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-blue-600 dark:hover:bg-gray-700"
+              className="flex cursor-pointer items-center justify-between rounded-xl border border-gray-200 bg-white p-3 text-left text-sm text-gray-700 transition-all hover:border-blue-300 hover:bg-blue-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-blue-600 dark:hover:bg-gray-700"
             >
               <span className="line-clamp-2">{suggestion}</span>
               <svg
