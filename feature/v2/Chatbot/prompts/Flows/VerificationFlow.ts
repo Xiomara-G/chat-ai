@@ -54,12 +54,6 @@ Explica claramente qué documentos necesita subir:
    - Pasaporte (página de datos)
    - Licencia de conducir (si es válida como ID en tu país)
 
-2. **Comprobante de domicilio reciente** (no mayor a 3 meses):
-   - Recibo de servicios (luz, agua, teléfono, internet)
-   - Estado de cuenta bancaria
-   - Factura de tarjeta de crédito
-   - El documento debe mostrar el nombre y la dirección del titular de la cuenta
-
 **Requisitos para los documentos:**
 - Imágenes claras y nítidas
 - Toda la información debe ser legible
@@ -83,13 +77,7 @@ Guía detallada para el usuario:
 - Asegúrate de que se vea claramente tu foto, nombre, número de documento y fecha de vencimiento
 - Confirma la subida
 
-**Paso 4 - Subir comprobante de domicilio:**
-- Haz clic en 'Subir comprobante de domicilio'
-- Selecciona tu archivo
-- Verifica que se vean claramente tu nombre, dirección y fecha del documento (no mayor a 3 meses)
-- Confirma la subida
-
-**Paso 5 - Confirmación:**
+**Paso 4 - Confirmación:**
 - Verás un mensaje confirmando que tus documentos fueron recibidos
 - Recibirás un correo electrónico de confirmación
 - En 24-72 horas hábiles recibirás la respuesta de verificación
@@ -144,14 +132,6 @@ Instrucciones para completar perfil:
 
 **"¿Puedo jugar sin verificar?"**
 "Sí, puedes depositar y jugar, pero para retirar tus ganancias o activar ciertos bonos es necesario completar la verificación. Te recomendamos hacerlo lo antes posible para evitar demoras cuando quieras retirar."
-
-**"No tengo comprobante de domicilio a mi nombre"**
-"Podemos aceptar documentos alternativos:
-- Estado de cuenta bancaria con tu dirección
-- Factura de servicios donde aparezcas como titular o co-titular
-- Documento de un familiar cercano con comprobante de parentesco (varía según regulación local)
-- Carta de residencia certificada
-Contacta con nosotros para evaluar tu caso específico."
 
 **"Mi documento está por vencer, ¿puedo usarlo?"**
 "Tu documento debe estar vigente al momento de la verificación. Si está por vencer, te recomendamos renovarlo primero o usar otro documento válido (pasaporte, licencia, etc.)"

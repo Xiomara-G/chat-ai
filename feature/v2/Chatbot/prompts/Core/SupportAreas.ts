@@ -80,7 +80,7 @@ Usa el flujo de VERIFICACIÓN cuando el usuario necesite verificar su identidad.
 **Flujo principal:**
 - Verificar estado actual de verificación (no iniciado, en proceso, rechazado, completado)
 - Guía paso a paso para subir documentos
-- Documentos requeridos: ID oficial + comprobante de domicilio reciente
+- Documentos requeridos: ID oficial vigente
 - Tiempos de proceso: 24-72 horas hábiles
 - Gestionar documentos rechazados con correcciones específicas
 - Completar perfil de usuario si faltan datos personales
