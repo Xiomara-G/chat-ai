@@ -1,9 +1,9 @@
 'use client';
 
 import React, { memo } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { Message } from '../interfaces/ChatbotInterfaces';
 import { formatMessageTime } from '../adapters/MessageAdapter';
-import { ChatbotLocalization } from '../localization/Core/ChatbotLocalization';
 
 interface ChatMessageProps {
   message: Message;
@@ -41,11 +41,29 @@ export const ChatMessage = memo(function ChatMessage({ message }: ChatMessagePro
                 : 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100'
             }`}
           >
-            <p className="whitespace-pre-wrap text-sm leading-relaxed">
-              {message.content}
-            </p>
-            {message.isStreaming && (
-              <span className="ml-1 inline-block animate-pulse">▊</span>
+            {isUser ? (
+              <p className="whitespace-pre-wrap text-sm leading-relaxed">
+                {message.content}
+              </p>
+            ) : (
+              <div className="markdown-content text-sm leading-relaxed">
+                <ReactMarkdown
+                  components={{
+                    p: ({ children }) => <p className="mb-2">{children}</p>,
+                    ul: ({ children }) => <ul className="mb-2 list-disc pl-4">{children}</ul>,
+                    ol: ({ children }) => <ol className="mb-2 list-decimal pl-4">{children}</ol>,
+                    li: ({ children }) => <li className="mb-1">{children}</li>,
+                    strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                    h1: ({ children }) => <h1 className="mb-2 text-xl font-bold">{children}</h1>,
+                    h2: ({ children }) => <h2 className="mb-2 text-lg font-bold">{children}</h2>,
+                    h3: ({ children }) => <h3 className="mb-1 font-semibold">{children}</h3>,
+                    hr: () => <hr className="my-3 border-gray-300" />,
+                    code: ({ children }) => <code className="rounded bg-gray-200 px-1 py-0.5 text-xs dark:bg-gray-700">{children}</code>,
+                  }}
+                >
+                  {message.content}
+                </ReactMarkdown>
+              </div>
             )}
           </div>
           <time

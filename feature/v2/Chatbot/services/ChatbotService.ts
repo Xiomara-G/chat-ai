@@ -3,9 +3,7 @@ import { Message, SendMessageRequest, SendMessageResponse } from '../interfaces/
 const API_BASE_URL = '/api/chat';
 
 export const sendMessage = async (
-  request: SendMessageRequest,
-  conversationHistory: Message[] = []
-): Promise<SendMessageResponse> => {
+request: SendMessageRequest, conversationHistory?: Message[], onChunk?: (content: string) => void): Promise<SendMessageResponse> => {
   try {
     const response = await fetch(API_BASE_URL, {
       method: 'POST',
@@ -14,11 +12,6 @@ export const sendMessage = async (
       },
       body: JSON.stringify({
         content: request.content,
-        conversationHistory: conversationHistory.map((msg) => ({
-          role: msg.role,
-          content: msg.content,
-          timestamp: msg.timestamp instanceof Date ? msg.timestamp.toISOString() : msg.timestamp,
-        })),
       }),
     });
 
@@ -27,13 +20,48 @@ export const sendMessage = async (
       throw new Error(errorData.error || 'Failed to get response');
     }
 
-    const data = await response.json();
+    if (!response.body) {
+      throw new Error('No response body');
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let fullContent = '';
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const data = line.slice(6);
+          try {
+            const parsed = JSON.parse(data);
+            fullContent += parsed.content || '';
+            if (onChunk) {
+              onChunk(fullContent);
+            }
+          } catch {
+            // Ignore parse errors
+          }
+        }
+      }
+    }
+
+    const message: Message = {
+      id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      role: 'assistant',
+      content: fullContent,
+      timestamp: new Date(),
+    };
 
     return {
-      message: {
-        ...data.message,
-        timestamp: new Date(data.message.timestamp),
-      },
+      message,
       sessionId: request.sessionId || `session_${Date.now()}`,
     };
   } catch (error) {

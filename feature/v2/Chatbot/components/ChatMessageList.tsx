@@ -7,7 +7,7 @@ import { ChatbotLocalization } from '../localization/Core/ChatbotLocalization';
 
 interface ChatMessageListProps {
   messages: Message[];
-  isLoading: boolean;
+  isLoading?: boolean;
 }
 
 export const ChatMessageList = memo(function ChatMessageList({
@@ -42,6 +42,9 @@ export const ChatMessageList = memo(function ChatMessageList({
     );
   }
 
+  const isStreaming = messages.some((msg) => msg.isStreaming);
+  const hasContent = messages.some((msg) => msg.isStreaming && msg.content);
+
   return (
     <section
       ref={scrollRef}
@@ -52,10 +55,12 @@ export const ChatMessageList = memo(function ChatMessageList({
       aria-atomic="false"
     >
       <div className="mx-auto max-w-3xl space-y-6">
-        {messages.map((message) => (
-          <ChatMessage key={message.id} message={message} />
-        ))}
-        {isLoading && (
+        {messages
+          .filter((msg) => !(msg.isStreaming && !msg.content))
+          .map((message) => (
+            <ChatMessage key={message.id} message={message} />
+          ))}
+        {isStreaming && !hasContent && (
           <div className="flex items-center gap-3 text-gray-500 dark:text-gray-400">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-medium dark:bg-gray-700">
               AI

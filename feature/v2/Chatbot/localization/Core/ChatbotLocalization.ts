@@ -8,6 +8,7 @@ export const ChatbotLocalization = {
   errorMessage: 'Algo salió mal. Por favor intenta nuevamente.',
   retryButton: 'Reintentar',
   newChatButton: 'Nueva conversación',
+  helperText: 'Presiona Enter para enviar, Shift + Enter para nueva línea',
   suggestions: [
     '¿Cómo hago un depósito con mi tarjeta de crédito?',
     'Mi retiro está tardando más de lo esperado',

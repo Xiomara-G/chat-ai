@@ -91,7 +91,7 @@ export const ChatInput = memo(function ChatInput({
           </button>
         </div>
         <p className="mt-2 text-center text-xs text-gray-500 dark:text-gray-400">
-          Press Enter to send, Shift + Enter for new line
+          {ChatbotLocalization.helperText}
         </p>
       </div>
     </section>
