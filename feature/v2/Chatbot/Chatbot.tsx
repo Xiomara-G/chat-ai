@@ -15,14 +15,23 @@ const INITIAL_GREETING = "Â¡Hola! Soy Lucky, tu asistente de soporte. Estoy aquÃ
 const STORAGE_KEY = 'chat_messages';
 
 export default function Chatbot() {
+  const [mounted, setMounted] = useState(false);
   const [state, setState] = useState<ChatState>({
     messages: [],
     inputValue: '',
     isLoading: false,
     error: null,
   });
+  const [showSuggestions, setShowSuggestions] = useState(true);
 
   useEffect(() => {
+    setMounted(true);
+    
+    const storedSuggestions = localStorage.getItem('show_suggestions');
+    if (storedSuggestions !== null) {
+      setShowSuggestions(storedSuggestions === 'true');
+    }
+
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       try {
@@ -48,10 +57,16 @@ export default function Chatbot() {
   }, []);
 
   useEffect(() => {
-    if (state.messages.length > 0) {
+    if (mounted && state.messages.length > 0) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state.messages));
     }
-  }, [state.messages]);
+  }, [state.messages, mounted]);
+
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem('show_suggestions', String(showSuggestions));
+    }
+  }, [showSuggestions, mounted]);
 
   const handleSendMessage = useCallback(async (content: string) => {
     const trimmedContent = content.trim();
@@ -113,20 +128,27 @@ export default function Chatbot() {
 
   const handleNewChat = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem('show_suggestions');
     setState({
       messages: [createAssistantMessage(INITIAL_GREETING)],
       inputValue: '',
       isLoading: false,
       error: null,
     });
+    setShowSuggestions(true);
   }, []);
 
   const handleSuggestionClick = useCallback(
     (suggestion: string) => {
+      setShowSuggestions(false);
       handleSendMessage(suggestion);
     },
     [handleSendMessage]
   );
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <div className="relative flex h-screen flex-col bg-gray-50 dark:bg-gray-950">
@@ -134,7 +156,7 @@ export default function Chatbot() {
       <ChatMessageList messages={state.messages} isLoading={state.isLoading} />
       <ChatSuggestions
         onSuggestionClick={handleSuggestionClick}
-        hasMessages={state.messages.length > 0}
+        hasMessages={!showSuggestions}
       />
       <ChatInput onSendMessage={handleSendMessage} isLoading={state.isLoading} />
       <div className="absolute bottom-4 right-4 z-10">

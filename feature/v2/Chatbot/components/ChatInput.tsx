@@ -1,6 +1,6 @@
 'use client';
 
-import React, { memo, useState, useCallback, useRef, KeyboardEvent } from 'react';
+import React, { memo, useState, useCallback, useRef, useEffect, KeyboardEvent } from 'react';
 import { ChatbotLocalization } from '../localization/Core/ChatbotLocalization';
 
 interface ChatInputProps {
@@ -13,7 +13,12 @@ export const ChatInput = memo(function ChatInput({
   isLoading,
 }: ChatInputProps) {
   const [inputValue, setInputValue] = useState('');
+  const [mounted, setMounted] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSend = useCallback(() => {
     const trimmedMessage = inputValue.trim();
@@ -49,6 +54,10 @@ export const ChatInput = memo(function ChatInput({
     },
     []
   );
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <section
