@@ -1,34 +1,147 @@
 import { Message, SendMessageRequest, SendMessageResponse } from '../interfaces/ChatbotInterfaces';
+import { getCustomerServicePrompt } from '../prompts/CustomerServiceAgent';
+
+const API_KEY = process.env.DEEPSEEK_API_KEY || process.env.GOOGLE_API_KEY || '';
+const API_URL = 'https://api.deepseek.com/chat/completions';
+
+interface DeepSeekMessage {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+}
+
+interface DeepSeekRequest {
+  model: string;
+  messages: DeepSeekMessage[];
+  temperature?: number;
+  max_tokens?: number;
+  stream?: boolean;
+}
+
+interface DeepSeekResponse {
+  choices?: Array<{
+    message?: {
+      role: string;
+      content: string;
+    };
+    finish_reason?: string;
+  }>;
+  error?: {
+    message: string;
+    type: string;
+    code: string;
+  };
+}
+
+const convertMessagesToDeepSeekFormat = (messages: Message[]): DeepSeekMessage[] => {
+  return messages.map((msg) => ({
+    role: msg.role === 'system' ? 'system' : msg.role === 'assistant' ? 'assistant' : 'user',
+    content: msg.content,
+  }));
+};
 
 const MOCK_RESPONSES = [
-  'That\'s an interesting question! Let me think about that for a moment.',
-  'I understand what you\'re asking. Here\'s what I can tell you about that topic.',
-  'Great question! Based on my knowledge, I can provide some insights.',
-  'I\'d be happy to help with that. Let me break it down for you.',
-  'That\'s a fascinating topic! Here\'s my perspective on it.',
+  'Entiendo tu consulta. Permíteme ayudarte con eso.',
+  'Gracias por contactar a soporte. Aquí está la información que necesitas.',
+  'Claro, te explico el proceso paso a paso.',
+  'Voy a verificar eso para ti ahora mismo.',
+  'No hay problema, eso tiene solución.',
 ];
 
 const getMockResponse = (userMessage: string): string => {
-  const baseResponse = MOCK_RESPONSES[Math.floor(Math.random() * MOCK_RESPONSES.length)];
-  return `${baseResponse}\n\nYou asked about: "${userMessage}"\n\nThis is a simulated response for demonstration purposes. In a production environment, this would be connected to an AI API like OpenAI, Claude, or your custom backend.`;
+  const baseResponse = MOCK_RESPONSES[Math.floor(Math.random() * MOCK_RESPONSES.length)]
+  return `${baseResponse}\n\n(Este es un modo de demostración - API de DeepSeek no configurada)`;
 };
 
 export const sendMessage = async (
-  request: SendMessageRequest
+  request: SendMessageRequest,
+  conversationHistory: Message[] = []
 ): Promise<SendMessageResponse> => {
-  await new Promise((resolve) => setTimeout(resolve, 1000 + Math.random() * 2000));
+  if (!API_KEY) {
+    console.warn('DEEPSEEK_API_KEY not configured, using mock response');
 
-  const message: Message = {
-    id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    role: 'assistant',
-    content: getMockResponse(request.content),
-    timestamp: new Date(),
-  };
+    await new Promise((resolve) => setTimeout(resolve, 1000 + Math.random() * 1000));
 
-  return {
-    message,
-    sessionId: request.sessionId || `session_${Date.now()}`,
-  };
+    const message: Message = {
+      id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      role: 'assistant',
+      content: getMockResponse(request.content),
+      timestamp: new Date(),
+    };
+
+    return {
+      message,
+      sessionId: request.sessionId || `session_${Date.now()}`,
+    };
+  }
+
+  try {
+    const systemPrompt = getCustomerServicePrompt();
+
+    const deepSeekMessages: DeepSeekMessage[] = [
+      {
+        role: 'system',
+        content: systemPrompt,
+      },
+      ...convertMessagesToDeepSeekFormat(conversationHistory),
+      {
+        role: 'user',
+        content: request.content,
+      },
+    ];
+
+    const deepSeekRequest: DeepSeekRequest = {
+      model: 'deepseek-chat',
+      messages: deepSeekMessages,
+      temperature: 0.7,
+      max_tokens: 1000,
+      stream: false,
+    };
+
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`,
+      },
+      body: JSON.stringify(deepSeekRequest),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || `API Error: ${response.status}`);
+    }
+
+    const data: DeepSeekResponse = await response.json();
+
+    const assistantContent = data.choices?.[0]?.message?.content ||
+      'Lo siento, no pude procesar tu mensaje. Por favor, intenta nuevamente.';
+
+    const message: Message = {
+      id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      role: 'assistant',
+      content: assistantContent,
+      timestamp: new Date(),
+    };
+
+    return {
+      message,
+      sessionId: request.sessionId || `session_${Date.now()}`,
+    };
+  } catch (error) {
+    console.error('Error calling DeepSeek API:', error);
+
+    const errorMessage: Message = {
+      id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      role: 'assistant',
+      content: 'Lo siento, estoy teniendo problemas técnicos en este momento. Por favor, intenta nuevamente en unos momentos o contacta a soporte directamente.',
+      timestamp: new Date(),
+    };
+
+    return {
+      message: errorMessage,
+      sessionId: request.sessionId || `session_${Date.now()}`,
+    };
+  }
 };
 
 export const generateId = (): string => {
